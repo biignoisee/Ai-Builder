@@ -1,0 +1,58 @@
+version: '3.8'
+
+networks:
+  rag_network:
+    driver: bridge
+
+volumes:
+  n8n_data:
+  qdrant_data:
+  neo4j_data:
+
+services:
+  # 1. n8n - Orquestador de flujos
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=America/Lima # Ajusta según tu zona horaria
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - rag_network
+
+  # 2. Qdrant - Base de datos Vectorial
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333" # API REST
+      - "6334:6334" # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - rag_network
+
+  # 3. Neo4j - Base de datos de Grafos
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474" # Interfaz web HTTP
+      - "7687:7687" # Protocolo Bolt (el que usa n8n para conectar)
+    environment:
+      - NEO4J_AUTH=neo4j/password123 # Cambia esto por una contraseña segura
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - rag_network
