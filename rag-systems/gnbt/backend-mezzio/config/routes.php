@@ -39,7 +39,29 @@ use Psr\Container\ContainerInterface;
  * );
  */
 
-return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
+return static function (
+    Application $app,
+    MiddlewareFactory $factory,
+    ContainerInterface $container
+): void {
     $app->get('/', HomePageHandler::class, 'home');
-    $app->get('/api/ping', PingHandler::class, 'api.ping');
+
+    $app->get(
+        '/api/ping',
+        PingHandler::class,
+        'api.ping'
+    );
+
+    $app->post(
+        '/graphql',
+        App\Handler\GraphQLHandler::class,
+        'graphql'
+    );
+
+    $app->route(
+        '/graphql',
+        App\Handler\GraphQLHandler::class,
+        ['OPTIONS'],
+        'graphql-options'
+    );
 };
