@@ -8,6 +8,7 @@ volumes:
   n8n_data:
   qdrant_data:
   neo4j_data:
+  ollama_data: # <- NUEVO VOLUMEN AQUÍ
 
 services:
   # 1. n8n - Orquestador de flujos
@@ -23,9 +24,10 @@ services:
       - N8N_PROTOCOL=http
       - NODE_ENV=production
       - WEBHOOK_URL=http://localhost:5678/
-      - GENERIC_TIMEZONE=America/Lima # Ajusta según tu zona horaria
+      - GENERIC_TIMEZONE=America/Lima
     volumes:
       - n8n_data:/home/node/.n8n
+      - /home/biignoisee/Documents/biignoisee/Ai-Builder/rag-systems/gnbt:/data/gnbt
     networks:
       - rag_network
 
@@ -49,10 +51,22 @@ services:
     restart: unless-stopped
     ports:
       - "7474:7474" # Interfaz web HTTP
-      - "7687:7687" # Protocolo Bolt (el que usa n8n para conectar)
+      - "7687:7687" # Protocolo Bolt
     environment:
-      - NEO4J_AUTH=neo4j/password123 # Cambia esto por una contraseña segura
+      - NEO4J_AUTH=neo4j/password123
     volumes:
       - neo4j_data:/data
+    networks:
+      - rag_network
+
+  # 4. Ollama - Motor de LLM y Embeddings
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
     networks:
       - rag_network

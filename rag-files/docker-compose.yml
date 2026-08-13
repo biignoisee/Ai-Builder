@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  sql_agent_network:
+    driver: bridge
+
+volumes:
+  n8n_sql_data:
+  postgres_data:
+
+services:
+  # 1. n8n - Orquestador de flujos
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n_sql
+    restart: unless-stopped
+    ports:
+      - "5679:5678" # Expuesto en el 5679 para no chocar con tu otro n8n
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5679/
+      - GENERIC_TIMEZONE=America/Lima
+    volumes:
+      - n8n_sql_data:/home/node/.n8n
+      # Montamos la carpeta con tus Excels
+      - ./rag-files:/data/rag-files
+    networks:
+      - sql_agent_network
+
+  # 2. PostgreSQL - Base de datos para los Excels
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secretpassword
+      - POSTGRES_DB=analytics_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sql_agent_network
