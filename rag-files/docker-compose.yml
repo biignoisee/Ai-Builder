@@ -7,6 +7,8 @@ networks:
 volumes:
   n8n_sql_data:
   postgres_data:
+  ollama_data:
+  # Hemos eliminado pgadmin_data de aquí
 
 services:
   # 1. n8n - Orquestador de flujos
@@ -15,7 +17,7 @@ services:
     container_name: n8n_sql
     restart: unless-stopped
     ports:
-      - "5679:5678" # Expuesto en el 5679 para no chocar con tu otro n8n
+      - "5679:5678"
     environment:
       - N8N_HOST=localhost
       - N8N_PORT=5678
@@ -25,8 +27,8 @@ services:
       - GENERIC_TIMEZONE=America/Lima
     volumes:
       - n8n_sql_data:/home/node/.n8n
-      # Montamos la carpeta con tus Excels
-      - ./rag-files:/data/rag-files
+      # ¡NUEVA RUTA AQUÍ! Mapeamos tu carpeta a la ruta permitida por n8n
+      - ./:/home/node/.n8n-files
     networks:
       - sql_agent_network
 
@@ -43,5 +45,32 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sql_agent_network
+
+  # 3. pgAdmin - Navegador Web para Postgres
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    # Hemos eliminado el volume de pgadmin para que levante sin error 404
+    networks:
+      - sql_agent_network
+
+
+# 4. Ollama - Motor LLM Local (¡NUEVO!)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_sql
+    restart: unless-stopped
+    ports:
+      - "11435:11434" # ¡Cambio aquí! Exponemos en el 11435 para no chocar
+    volumes:
+      - ollama_data:/root/.ollama
     networks:
       - sql_agent_network
