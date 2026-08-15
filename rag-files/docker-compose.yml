@@ -63,14 +63,19 @@ services:
       - sql_agent_network
 
 
-# 4. Ollama - Motor LLM Local (¡NUEVO!)
+  # 4. Ollama - Motor LLM Local
   ollama:
     image: ollama/ollama:latest
     container_name: ollama_sql
     restart: unless-stopped
     ports:
-      - "11435:11434" # ¡Cambio aquí! Exponemos en el 11435 para no chocar
+      - "11435:11434"
     volumes:
       - ollama_data:/root/.ollama
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - OLLAMA_VULKAN=1
+      - OLLAMA_DEBUG=1
     networks:
       - sql_agent_network

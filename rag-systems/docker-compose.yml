@@ -8,7 +8,7 @@ volumes:
   n8n_data:
   qdrant_data:
   neo4j_data:
-  ollama_data: # <- NUEVO VOLUMEN AQUÍ
+  ollama_data:
 
 services:
   # 1. n8n - Orquestador de flujos
