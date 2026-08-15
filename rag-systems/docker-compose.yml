@@ -27,7 +27,8 @@ services:
       - GENERIC_TIMEZONE=America/Lima
     volumes:
       - n8n_data:/home/node/.n8n
-      - /home/biignoisee/Documents/biignoisee/Ai-Builder/rag-systems/gnbt:/data/gnbt
+      # AQUÍ ESTÁ EL CAMBIO: Mapeamos la ruta de tu proyecto Laravel
+      - /home/biignoisee/Documents/biignoisee/Ai-Builder/rag-systems/eyescare:/data/eyescare
     networks:
       - rag_network
 
