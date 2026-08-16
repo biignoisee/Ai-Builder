@@ -72,7 +72,7 @@ def main():
                     index_to_neo4j(driver, filepath, class_name, node_type, imports)
 
     driver.close()
-    print("¡Indexación 10/10 completada csm!")
+    print("¡Indexación 10/10 completada")
 
 if __name__ == "__main__":
     main()
