@@ -43,3 +43,17 @@ AI systems that can do work for you independently ...
 In conclussion ... AI systems where and LLm controls the workflow
 
 An Agent runs tools in a loop to achieve a goal
+
+
+### N8N
+workflow automation startup founded in Berlin
+cloud  or host (recommended)
+fair code license :)
+
+
+### APIS , costs and integretions
+no need to spend
+maximum a couples of dollars
+choose free tools
+
+OPEN ROUTER as a alternative of OpenAI  (but use open ai balance)
